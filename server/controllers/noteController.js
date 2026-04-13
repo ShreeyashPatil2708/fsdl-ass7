@@ -52,13 +52,13 @@ const updateNote = async (req, res) => {
     const { id } = req.params;
     const { title, content, color, pinned } = req.body;
 
-    // Explicitly type-cast each field to prevent operator injection
-    const updateFields = {
-      title:   String(title   ?? ''),
-      content: String(content ?? ''),
-      color:   String(color   ?? '#ffffff'),
-      pinned:  Boolean(pinned),
-    };
+    // Build update object: only include fields that were explicitly provided,
+    // then type-cast to prevent operator injection.
+    const updateFields = {};
+    if (title    !== undefined) updateFields.title   = String(title);
+    if (content  !== undefined) updateFields.content = String(content);
+    if (color    !== undefined) updateFields.color   = String(color);
+    if (pinned   !== undefined) updateFields.pinned  = Boolean(pinned);
 
     const updatedNote = await Note.findByIdAndUpdate(
       id,
